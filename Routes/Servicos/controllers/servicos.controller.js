@@ -77,6 +77,26 @@ exports.finalizarServico = async (req, res, next) => {
     }
 }
 
+exports.registrarImagens = async (req, res) => {
+    try {
+        const imagemPaht = req.file ? utils.formatarUrl(req.file.path) : null;
+
+        await mysql.execute(`
+            INSERT INTO imagens_servico (
+                        id_servico,
+                        imagem,
+                        antes_ou_depois
+                    ) VALUES (?,?,?);`,
+            [req.body.id_servico, imagemPaht, req.body.antes_ou_depois]
+        );
+
+        return res.status(200).send({ message: 'Imagem adicionadas com sucesso' });
+    } catch (error) {
+        utils.getError(error);
+        return res.status(500).send({ error: error });
+    }
+}
+
 exports.pesquisarServico = async (req, res, next) => {
     try {
         let servicos;

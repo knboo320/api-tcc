@@ -31,6 +31,12 @@ router.put(
     servicoController.finalizarServico
 );
 
+router.post(
+    '/imagens',
+    upload.single('imagem'),
+    servicoController.registrarImagens
+);
+
 router.get(
     '/pesquisar',
     servicoController.pesquisarServico,

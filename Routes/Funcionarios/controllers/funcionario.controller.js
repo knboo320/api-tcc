@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 
 exports.verificarFuncionario = async (req, res, next) => {
     try {
-        console.log(req);
         const verificarFuncionario = await mysql.execute(
             `SELECT id_funcionario FROM funcionarios WHERE rg = ?;`,
             [req.body.rg][0]

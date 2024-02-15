@@ -116,6 +116,10 @@ exports.pesquisarServico = async (req, res, next) => {
                 `SELECT * FROM servicos WHERE numero_do_servico = ?;`,
                 [req.body.numero_do_servico]
             );
+        } else {
+            servicos = await mysql.execute(
+                `SELECT * FROM servicos;`,
+            );
         }
 
         if (servicos.length >= 1) {
@@ -128,6 +132,29 @@ exports.pesquisarServico = async (req, res, next) => {
             mensagem: 'Nenhum serviço encontrado',
         });
         
+    } catch (error) {
+        utils.getError(error);
+        return res.status(500).send({ error: error });
+    }
+}
+
+exports.retornarServico = async (req, res, next) => {
+    try {
+        const dataServico = await mysql.execute(
+            `SELECT * FROM servicos WHERE id_servico = ?;`,
+            [req.body.id_servico]
+        );
+        const imagensServico = await mysql.execute(
+            `SELECT * FROM imagens_servico WHERE id_servico = ?;`,
+            [req.body.id_servico]
+        );
+        
+        return res.status(200).send({
+            mensagem: 'Serviço retornado com sucesso!',
+            servico: dataServico[0],
+            imagens_servico: imagensServico
+        });
+
     } catch (error) {
         utils.getError(error);
         return res.status(500).send({ error: error });

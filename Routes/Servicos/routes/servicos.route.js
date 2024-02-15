@@ -38,6 +38,11 @@ router.post(
 );
 
 router.get(
+    '/retornar',
+    servicoController.retornarServico,
+);
+
+router.get(
     '/pesquisar',
     servicoController.pesquisarServico,
 );

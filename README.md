@@ -4,7 +4,7 @@ Para a criação do banco de dados:
  1. Rodar Arquivo de Criação do Banco de Dados
  Rodar em 1°: `api-tcc/mysql/scripts/DDL.sql`
 
-2. Criar um arquivo de configuração de variáveis de ambiente na raiz do projeto chamado `nodemon.json` (Ex: `API-WSC2022/nodemon.json`), onde deve estar de acordo com os atributos a seguir:
+2. Criar um arquivo de configuração de variáveis de ambiente na raiz do projeto chamado `nodemon.json` (Ex: `api-tcc/nodemon.json`), onde deve estar de acordo com os atributos a seguir:
     ```json
     {
         "env" : {        

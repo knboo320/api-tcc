@@ -126,7 +126,7 @@ exports.atualizarSenhaFuncionario = async (req, res, next) => {
                 SET senha        = ?,
                     editar_senha = ?
                 WHERE rg    = ?;
-            `, [hash, true, req.body.rg]);
+            `, [hash, req.body.editar_senha, req.body.rg]);
             return res.status(200).send({
                 message: 'Atualizado com sucesso',
                 resultado: resultado

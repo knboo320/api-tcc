@@ -27,6 +27,17 @@ exports.registrarServico = async (req, res) => {
 
 exports.iniciarServico = async (req, res, next) => {
     try {
+        const dataServico = await mysql.execute(
+            `SELECT * FROM servicos WHERE id_servico = ?;`,
+            [req.body.id_servico]
+        );
+        
+        if(dataServico[0] == undefined) {
+            return res.status(404).send({
+                mensagem: 'Nenhum serviço encontrado!',
+            });
+        }
+
         const resultado = await mysql.execute(`
                 UPDATE servicos 
                 SET data_inicio    = ?,
@@ -47,6 +58,17 @@ exports.iniciarServico = async (req, res, next) => {
 
 exports.finalizarServico = async (req, res, next) => {
     try {
+        const dataServico = await mysql.execute(
+            `SELECT * FROM servicos WHERE id_servico = ?;`,
+            [req.body.id_servico]
+        );
+
+        if(dataServico[0] == undefined) {
+            return res.status(404).send({
+                mensagem: 'Nenhum serviço encontrado!',
+            });
+        }
+
         const resultado = await mysql.execute(`
                 UPDATE servicos 
                 SET descricao_do_servico_realizado = ?,
@@ -64,7 +86,10 @@ exports.finalizarServico = async (req, res, next) => {
                     status                         = ?
                 WHERE id_servico                   = ?;
             `, [req.body.descricao_do_servico_realizado, req.body.utilizou_pecas, req.body.pecas, req.body.valor_pecas, req.body.houve_excedente, req.body.valor_excedente, req.body.avarias, req.body.problema_solucionado, req.body.havera_retorno, req.body.local_limpo, req.body.cumpriu_horario, req.body.data_fim, req.body.status, req.body.id_servico]);
-        return res.status(200).send({
+
+
+        
+            return res.status(200).send({
             message: 'Serviço finalizado com sucesso',
             resultado: resultado
         });
@@ -149,6 +174,11 @@ exports.retornarServico = async (req, res, next) => {
             [req.body.id_servico]
         );
         
+        if(dataServico[0] == undefined) {
+            return res.status(404).send({
+                mensagem: 'Nenhum serviço encontrado!',
+            });
+        }
         return res.status(200).send({
             mensagem: 'Serviço retornado com sucesso!',
             servico: dataServico[0],
@@ -186,6 +216,17 @@ exports.registrarAssinaturaPrestador = async (req, res) => {
 exports.registrarAssinaturaCliente = async (req, res) => {
     try {
         const imagemPaht = req.file ? utils.formatarUrl(req.file.path) : null;
+
+        const dataServico = await mysql.execute(
+            `SELECT * FROM assinaturas WHERE id_servico = ?;`,
+            [req.body.id_servico]
+        );
+        
+        if(dataServico[0] == undefined) {
+            return res.status(404).send({
+                mensagem: 'Nenhuma assinatura nesse serviço encontrado!',
+            });
+        }
 
         await mysql.execute(`
             UPDATE assinaturas SET assinatura_cliente = ? WHERE id_servico = ?;`,

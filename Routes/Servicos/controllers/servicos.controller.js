@@ -123,10 +123,9 @@ exports.registrarImagens = async (req, res) => {
 exports.pesquisarServico = async (req, res, next) => {
     try {
         let servicos;
+        var response = [];
 
         if (req.body.data_fim != undefined) {
-            console.log(req.body.data_fim + 'T23:59:59.000Z');
-
             servicos = await mysql.execute(
                 `SELECT * FROM servicos WHERE data_fim < ? AND data_fim > ?;`,
                 [req.body.data_fim + 'T23:59:59.000Z', req.body.data_fim + 'T00:00:00.000Z']
@@ -147,10 +146,34 @@ exports.pesquisarServico = async (req, res, next) => {
             );
         }
 
+        async function fetchInfos() {
+            for (const servico of servicos) {    
+                const imagensServico = await mysql.execute(
+                    `SELECT * FROM imagens_servico WHERE id_servico = ?;`,
+                    [servico['id_servico']]
+                );
+                const assinaturasServico = await mysql.execute(
+                    `SELECT * FROM assinaturas WHERE id_servico = ?;`,
+                    [servico['id_servico']]
+                );
+                const pdfServico = await mysql.execute(
+                    `SELECT * FROM pdfs_servicos WHERE id_servico = ?;`,
+                    [servico['id_servico']]
+                );
+                servico['assinaturas'] = assinaturasServico[0];
+                servico['imagens'] = imagensServico;
+                servico['pdf'] = pdfServico[0];
+        
+                response.push(servico);
+            }
+        }
+        
+        await fetchInfos();
+
         if (servicos.length >= 1) {
             return res.status(200).send({
                 mensagem: 'Seviços retornados com sucesso!',
-                servicos: servicos
+                servicos: response
             });
         } 
         return res.status(200).send({
@@ -173,6 +196,14 @@ exports.retornarServico = async (req, res, next) => {
             `SELECT * FROM imagens_servico WHERE id_servico = ?;`,
             [req.body.id_servico]
         );
+        const assinaturasServico = await mysql.execute(
+            `SELECT * FROM assinaturas WHERE id_servico = ?;`,
+            [req.body.id_servico]
+        );
+        const pdfServico = await mysql.execute(
+            `SELECT * FROM pdfs_servicos WHERE id_servico = ?;`,
+            [req.body.id_servico]
+        );
         
         if(dataServico[0] == undefined) {
             return res.status(404).send({
@@ -182,7 +213,9 @@ exports.retornarServico = async (req, res, next) => {
         return res.status(200).send({
             mensagem: 'Serviço retornado com sucesso!',
             servico: dataServico[0],
-            imagens_servico: imagensServico
+            assinaturas_servico: assinaturasServico[0],
+            imagens_servico: imagensServico,
+            pdf: pdfServico[0]
         });
 
     } catch (error) {
@@ -234,6 +267,75 @@ exports.registrarAssinaturaCliente = async (req, res) => {
         );
 
         return res.status(200).send({ message: 'Assinatura do cliente adicionada com sucesso' });
+    } catch (error) {
+        utils.getError(error);
+        return res.status(500).send({ error: error });
+    }
+}
+
+exports.retornarServicos = async (req, res, next) => {
+    try {
+        var response = [];
+
+        const dataServico = await mysql.execute(
+            `SELECT * FROM servicos;`,
+        );
+        
+        
+        if(dataServico[0] == undefined) {
+            return res.status(404).send({
+                mensagem: 'Nenhum serviço encontrado!',
+            });
+        }
+
+        async function fetchInfos() {
+            for (const servico of dataServico) {    
+                const imagensServico = await mysql.execute(
+                    `SELECT * FROM imagens_servico WHERE id_servico = ?;`,
+                    [servico['id_servico']]
+                );
+                const assinaturasServico = await mysql.execute(
+                    `SELECT * FROM assinaturas WHERE id_servico = ?;`,
+                    [servico['id_servico']]
+                );
+                const pdfServico = await mysql.execute(
+                    `SELECT * FROM pdfs_servicos WHERE id_servico = ?;`,
+                    [servico['id_servico']]
+                );
+                servico['assinaturas'] = assinaturasServico[0];
+                servico['imagens'] = imagensServico;
+                servico['pdf'] = pdfServico[0];
+        
+                response.push(servico);
+            }
+        }
+        
+        await fetchInfos();
+
+        return res.status(200).send({
+            mensagem: 'Serviços retornados com sucesso!',
+            servicos: dataServico
+        });
+
+    } catch (error) {
+        utils.getError(error);
+        return res.status(500).send({ error: error });
+    }
+}
+
+exports.registrarPdf = async (req, res) => {
+    try {
+        const imagemPaht = req.file ? utils.formatarUrl(req.file.path) : null;
+
+        await mysql.execute(`
+            INSERT INTO pdfs_servicos (
+                        id_servico,
+                        pdf
+                    ) VALUES (?,?);`,
+            [req.body.id_servico, imagemPaht]
+        );
+
+        return res.status(200).send({ message: 'PDF adicionado com sucesso' });
     } catch (error) {
         utils.getError(error);
         return res.status(500).send({ error: error });

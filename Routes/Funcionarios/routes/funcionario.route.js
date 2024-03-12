@@ -34,7 +34,7 @@ router.post(
 
 //Rota de verificação se já existe funcionário com o rg
 router.get(
-    '/verificarFuncionario',
+    '/verificarFuncionario/:rg',
     funcionarioController.verificarFuncionario,
     funcionarioController.returnVerificarFuncionario
 );

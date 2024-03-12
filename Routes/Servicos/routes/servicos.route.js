@@ -77,13 +77,13 @@ router.post(
 );
 
 router.get(
-    '/retornar',
+    '/retornar/:id_servico',
     servicoController.retornarServico,
 );
 
 router.get(
-    '/pesquisar',
-    servicoController.pesquisarServico,
+    '/filtrar/:tipo_filtro/:valor',
+    servicoController.filtrarServicos,
 );
 
 router.put(

@@ -120,30 +120,35 @@ exports.registrarImagens = async (req, res) => {
     }
 }
 
-exports.pesquisarServico = async (req, res, next) => {
+exports.filtrarServicos = async (req, res, next) => {
     try {
         let servicos;
         var response = [];
 
-        if (req.body.data_fim != undefined) {
+        if (req.params.tipo_filtro == 'data') {
             servicos = await mysql.execute(
                 `SELECT * FROM servicos WHERE data_fim < ? AND data_fim > ?;`,
-                [req.body.data_fim + 'T23:59:59.000Z', req.body.data_fim + 'T00:00:00.000Z']
+                [req.params.valor + 'T23:59:59.000Z', req.params.valor + 'T00:00:00.000Z']
             );
-        } else if (req.body.tipo_de_servico != undefined) {
+        } else if (req.params.tipo_filtro == 'tipo') {
             servicos = await mysql.execute(
                 `SELECT * FROM servicos WHERE tipo_de_servico = ?;`,
-                [req.body.tipo_de_servico]
+                [req.params.valor]
             );
-        } else if (req.body.id_servico != undefined) {
+        } else if (req.params.tipo_filtro == 'status') {
+            servicos = await mysql.execute(
+                `SELECT * FROM servicos WHERE status = ?;`,
+                [req.params.valor]
+            );
+        } else if (req.params.tipo_filtro == 'id') {
             servicos = await mysql.execute(
                 `SELECT * FROM servicos WHERE id_servico = ?;`,
-                [req.body.id_servico]
+                [req.params.valor]
             );
         } else {
-            servicos = await mysql.execute(
-                `SELECT * FROM servicos;`,
-            );
+            return res.status(500).send({
+                mensagem: 'Tipo de filtro inválido',
+            });
         }
 
         async function fetchInfos() {
@@ -176,7 +181,7 @@ exports.pesquisarServico = async (req, res, next) => {
                 servicos: response
             });
         } 
-        return res.status(200).send({
+        return res.status(404).send({
             mensagem: 'Nenhum serviço encontrado',
         });
         
@@ -190,19 +195,19 @@ exports.retornarServico = async (req, res, next) => {
     try {
         const dataServico = await mysql.execute(
             `SELECT * FROM servicos WHERE id_servico = ?;`,
-            [req.body.id_servico]
+            [req.params.id_servico]
         );
         const imagensServico = await mysql.execute(
             `SELECT * FROM imagens_servico WHERE id_servico = ?;`,
-            [req.body.id_servico]
+            [req.params.id_servico]
         );
         const assinaturasServico = await mysql.execute(
             `SELECT * FROM assinaturas WHERE id_servico = ?;`,
-            [req.body.id_servico]
+            [req.params.id_servico]
         );
         const pdfServico = await mysql.execute(
             `SELECT * FROM pdfs_servicos WHERE id_servico = ?;`,
-            [req.body.id_servico]
+            [req.params.id_servico]
         );
         
         if(dataServico[0] == undefined) {

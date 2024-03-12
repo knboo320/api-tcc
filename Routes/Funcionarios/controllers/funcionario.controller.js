@@ -8,7 +8,7 @@ exports.verificarFuncionario = async (req, res, next) => {
     try {
         const verificarFuncionario = await mysql.execute(
             `SELECT id_funcionario FROM funcionarios WHERE rg = ?;`,
-            [req.body.rg][0]
+            [req.params.rg]
         );
         if (verificarFuncionario.length >= 1) {
             res.locals.id_funcionario = verificarFuncionario[0].id_funcionario;

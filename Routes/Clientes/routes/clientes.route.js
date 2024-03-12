@@ -5,14 +5,21 @@ const clienteController = require('../controllers/clientes.controller');
 //Rota de cadastro de cliente
 router.post(
     '/cadastro',
-    clienteController.verificarCliente,
+    clienteController.verificarClienteCadastro,
     clienteController.registrarCliente,
 );
 
 //Rota pegar dados do cliente
 router.get(
-    '/user',
-    clienteController.verificarCliente,
+    '/cpf/:cpf',
+    clienteController.verificarClienteCpf,
+    clienteController.getDadosCliente,
+    clienteController.returnDadosCliente,
+);
+
+router.get(
+    '/id/:id_cliente',
+    clienteController.verificarClienteId,
     clienteController.getDadosCliente,
     clienteController.returnDadosCliente,
 );

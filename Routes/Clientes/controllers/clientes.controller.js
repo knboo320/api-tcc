@@ -77,8 +77,8 @@ exports.getDadosCliente = async (req, res, next) => {
 exports.returnDadosCliente = async (req, res, next) => {
     try {
         return res.status(200).send({
-            dados_cliente: res.locals.cliente,
-            mensagem: 'Dados retornados com Sucesso!'
+            mensagem: 'Dados retornados com Sucesso!',
+            dados_cliente: res.locals.cliente
         });
     } catch (error) {
         utils.getError(error);

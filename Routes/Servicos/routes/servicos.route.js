@@ -61,19 +61,37 @@ router.post(
 );
 
 router.put(
-    '/inciar',
+    '/inciar/:id_servico',
     servicoController.iniciarServico,
 );
 
 router.put(
-    '/finalizar',
+    '/finalizar/:id_servico',
     servicoController.finalizarServico
 );
 
 router.post(
-    '/imagens',
+    '/imagens/:id_servico',
     uploadServicos.single('imagem'),
     servicoController.registrarImagens
+);
+
+router.post(
+    '/pdf/cadastrar/:id_servico',
+    uploadPdfServicos.single('pdf'),
+    servicoController.registrarPdf
+);
+
+router.post(
+    '/assinatura/prestador/:id_servico',
+    uploadAssinaturaPrestador.single('assinatura_prestador'),
+    servicoController.registrarAssinaturaPrestador
+);
+
+router.put(
+    '/assinatura/cliente/:id_servico',
+    uploadAssinaturaCliente.single('assinatura_cliente'),
+    servicoController.registrarAssinaturaCliente
 );
 
 router.get(
@@ -84,29 +102,6 @@ router.get(
 router.get(
     '/filtrar/:tipo_filtro/:valor',
     servicoController.filtrarServicos,
-);
-
-router.put(
-    '/assinatura/cliente',
-    uploadAssinaturaCliente.single('assinatura_cliente'),
-    servicoController.registrarAssinaturaCliente
-);
-
-router.post(
-    '/assinatura/prestador',
-    uploadAssinaturaPrestador.single('assinatura_prestador'),
-    servicoController.registrarAssinaturaPrestador
-);
-
-router.get(
-    '/retornarServicos',
-    servicoController.retornarServicos,
-);
-
-router.post(
-    '/pdf/cadastrar',
-    uploadPdfServicos.single('pdf'),
-    servicoController.registrarPdf
 );
 
 module.exports = router;

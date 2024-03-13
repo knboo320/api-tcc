@@ -16,7 +16,19 @@ Para a criação do banco de dados:
             "URL_DOMINIO": "<host-do-servico>"
         }
     }
-3. Instalar as depencias do Projeto
+
+3. Criar as pastas
+    ```sh
+    api-tcc/assets
+        api-tcc/assets/assinaturas
+            api-tcc/assets/assinaturas/clientes
+            api-tcc/assets/assinaturas/prestadores
+    api-tcc/assets/servicos
+        api-tcc/assets/servicos/imagens
+        api-tcc/assets/servicos/pdfs
+    ```
+
+4. Instalar as depencias do Projeto
     ```sh
     npm install
     ```
@@ -25,3 +37,6 @@ Para a criação do banco de dados:
 ```sh
 npm start
 ```
+
+## 📗 Documentação
+https://documenter.getpostman.com/view/26690426/2sA2rFRKtY

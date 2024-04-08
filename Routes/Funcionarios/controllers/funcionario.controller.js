@@ -30,9 +30,10 @@ exports.registrarFuncionario = async (req, res) => {
                             email,
                             cpf,
                             senha,
-                            editar_senha
-                        ) VALUES (?,?,?,?,?);`,
-                [req.body.nome, req.body.email, req.body.cpf, hash, false]
+                            editar_senha,
+                            id_servico_iniciado
+                        ) VALUES (?,?,?,?,?,?);`,
+                [req.body.nome, req.body.email, req.body.cpf, hash, false, null]
             );
             return res.status(201).send({ message: 'Funcionário Cadastrado com Sucesso!' });
         } else {

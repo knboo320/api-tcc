@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const servicoController = require('../controllers/servicos.controller');
+const login = require('../middleware/login.middleware');
 
 //Configurações de Arquivos - Serviços
 const storageServicos = multer.diskStorage({
@@ -19,7 +20,7 @@ const uploadServicos = multer({
 //Configurações de Arquivos - Assinaturas cliente
 const storageAssinaturaCliente = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './assets/assinaturas/clientes');
+        cb(null, './assets/assinaturas');
     },
     filename: (req, file, cb) => {
         cb(null, new Date().getTime() + '-' + file.originalname);
@@ -29,18 +30,6 @@ const uploadAssinaturaCliente = multer({
     storage: storageAssinaturaCliente
 });
 
-//Configurações de Arquivos - Assinaturas Prestador
-const storageAssinaturaPrestador = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './assets/assinaturas/prestadores');
-    },
-    filename: (req, file, cb) => {
-        cb(null, new Date().getTime() + '-' + file.originalname);
-    }
-});
-const uploadAssinaturaPrestador = multer({
-    storage: storageAssinaturaPrestador
-});
 
 //Configurações de Arquivos PDFs - Serviços
 const storagePdfServicos = multer.diskStorage({
@@ -57,50 +46,52 @@ const uploadPdfServicos = multer({
 
 router.post(
     '/criar',
+    login.required,
     servicoController.registrarServico,
 );
 
 router.put(
     '/inciar/:id_servico',
+    login.required,
     servicoController.iniciarServico,
 );
 
 router.put(
     '/finalizar/:id_servico',
+    login.required,
     servicoController.finalizarServico
 );
 
 router.post(
     '/imagens/:id_servico',
+    login.required,
     uploadServicos.single('imagem'),
     servicoController.registrarImagens
 );
 
 router.post(
     '/pdf/cadastrar/:id_servico',
+    login.required,
     uploadPdfServicos.single('pdf'),
     servicoController.registrarPdf
 );
 
 router.post(
-    '/assinatura/prestador/:id_servico',
-    uploadAssinaturaPrestador.single('assinatura_prestador'),
-    servicoController.registrarAssinaturaPrestador
-);
-
-router.put(
     '/assinatura/cliente/:id_servico',
+    login.required,
     uploadAssinaturaCliente.single('assinatura_cliente'),
     servicoController.registrarAssinaturaCliente
 );
 
 router.get(
     '/retornar/:id_servico',
+    login.required,
     servicoController.retornarServico,
 );
 
 router.get(
     '/filtrar/:tipo_filtro/:valor',
+    login.required,
     servicoController.filtrarServicos,
 );
 

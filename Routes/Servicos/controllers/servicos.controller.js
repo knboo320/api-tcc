@@ -38,6 +38,13 @@ exports.iniciarServico = async (req, res, next) => {
             });
         }
 
+        await mysql.execute(`
+            UPDATE funcionarios 
+            SET id_servico_iniciado    = ?
+            WHERE id_funcionario       = ?;
+            `, [req.params.id_servico, req.userData.id_funcionario]
+        );
+
         const resultado = await mysql.execute(`
                 UPDATE servicos 
                 SET data_inicio    = ?,
@@ -58,6 +65,8 @@ exports.iniciarServico = async (req, res, next) => {
 
 exports.finalizarServico = async (req, res, next) => {
     try {
+        console.log(req.userData.id_funcionario);
+
         const dataServico = await mysql.execute(
             `SELECT * FROM servicos WHERE id_servico = ?;`,
             [req.params.id_servico]
@@ -68,6 +77,13 @@ exports.finalizarServico = async (req, res, next) => {
                 mensagem: 'Nenhum serviço encontrado!',
             });
         }
+
+        await mysql.execute(`
+            UPDATE funcionarios 
+            SET id_servico_iniciado    = ?
+            WHERE id_funcionario       = ?;
+            `, [null, req.userData.id_funcionario]
+        );
 
         const resultado = await mysql.execute(`
                 UPDATE servicos 
@@ -139,43 +155,16 @@ exports.registrarPdf = async (req, res) => {
     }
 }
 
-exports.registrarAssinaturaPrestador = async (req, res) => {
+exports.registrarAssinaturaCliente = async (req, res) => {
     try {
         const imagemPaht = req.file ? utils.formatarUrl(req.file.path) : null;
 
         await mysql.execute(`
             INSERT INTO assinaturas (
                         id_servico,
-                        assinatura_prestador
+                        assinatura_cliente
                     ) VALUES (?,?);`,
             [req.params.id_servico, imagemPaht]
-        );
-
-        return res.status(200).send({ message: 'Assinatura do prestador adicionada com sucesso' });
-    } catch (error) {
-        utils.getError(error);
-        return res.status(500).send({ error: error });
-    }
-}
-
-exports.registrarAssinaturaCliente = async (req, res) => {
-    try {
-        const imagemPaht = req.file ? utils.formatarUrl(req.file.path) : null;
-
-        const dataServico = await mysql.execute(
-            `SELECT * FROM assinaturas WHERE id_servico = ?;`,
-            [req.params.id_servico]
-        );
-        
-        if(dataServico[0] == undefined) {
-            return res.status(404).send({
-                mensagem: 'Nenhuma assinatura nesse serviço encontrado!',
-            });
-        }
-
-        await mysql.execute(`
-            UPDATE assinaturas SET assinatura_cliente = ? WHERE id_servico = ?;`,
-            [imagemPaht, req.params.id_servico]
         );
 
         return res.status(200).send({ message: 'Assinatura do cliente adicionada com sucesso' });
@@ -188,7 +177,7 @@ exports.registrarAssinaturaCliente = async (req, res) => {
 exports.filtrarServicos = async (req, res, next) => {
     try {
         let servicos;
-        var response = [];
+        let response = [];
 
         if (req.params.tipo_filtro == 'data') {
             servicos = await mysql.execute(

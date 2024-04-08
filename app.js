@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const funcionariosRoutes = require('./Routes/Funcionarios/routes/funcionario.route');
 const clientesRoutes = require('./Routes/Clientes/routes/clientes.route');
 const servicosRoutes = require('./Routes/Servicos/routes/servicos.route');
+const emailRoutes = require('./Routes/Email/routes/email.route');
 
 app.use(morgan('dev'));
 app.use(helmet());
@@ -33,6 +34,7 @@ app.use('/assets', express.static('./assets'));
 app.use('/funcionarios', funcionariosRoutes);
 app.use('/clientes', clientesRoutes);
 app.use('/servicos', servicosRoutes);
+app.use('/email', emailRoutes);
 
 //Erros
 app.use((req, res, next) => {
